@@ -477,3 +477,74 @@ st.info(
     "개봉일 스크린 수와 총 관객 수의 관계를 확인하면서, "
     "첫 주 관객 수가 많은 영화가 큰 버블로 나타나는 것을 함께 비교할 수 있습니다."
 )
+# ============================================================
+# 그래프 7. 선버스트 — 국가에서 장르로 내려가면
+# ============================================================
+
+st.header("📊 그래프 7. 제작 국가와 장르별 영화 분포")
+
+sunburst_df = df[
+    ["nation", "genre", "movieNm"]
+].dropna(
+    subset=["nation", "genre", "movieNm"]
+).copy()
+
+# 제작 국가가 여러 개 적혀 있는 경우 첫 번째 국가만 사용
+sunburst_df["nation"] = (
+    sunburst_df["nation"]
+    .astype(str)
+    .str.split("|")
+    .str[0]
+    .str.strip()
+)
+
+# 장르가 여러 개 적혀 있는 경우 첫 번째 장르만 사용
+sunburst_df["genre"] = (
+    sunburst_df["genre"]
+    .astype(str)
+    .str.split("|")
+    .str[0]
+    .str.strip()
+)
+
+# 빈 값 제거
+sunburst_df = sunburst_df[
+    (sunburst_df["nation"] != "") &
+    (sunburst_df["genre"] != "")
+]
+
+# 국가 → 장르별 영화 편수 계산
+sunburst_count = (
+    sunburst_df
+    .groupby(["nation", "genre"])
+    .size()
+    .reset_index(name="영화 편수")
+)
+
+fig7 = px.sunburst(
+    sunburst_count,
+    path=["nation", "genre"],
+    values="영화 편수",
+    title="제작 국가 → 장르별 영화 편수",
+)
+
+fig7.update_traces(
+    hovertemplate=(
+        "<b>%{label}</b><br>"
+        "영화 편수: %{value}편"
+        "<extra></extra>"
+    )
+)
+
+fig7.update_layout(
+    margin=dict(t=60, b=20, l=20, r=20)
+)
+
+st.plotly_chart(fig7, use_container_width=True)
+
+st.subheader("💡 이 그래프로 알 수 있는 것")
+st.info(
+    "이 그래프로 알 수 있는 것: "
+    "제작 국가별로 어떤 장르의 영화가 많이 포함되어 있는지와 "
+    "각 국가와 장르의 영화 편수를 한눈에 비교할 수 있습니다."
+)

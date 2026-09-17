@@ -412,4 +412,68 @@ st.info(
     "영화가 10편 이상인 장르끼리 총 관객의 분포와 중앙값, "
     "그리고 다른 영화들과 비교해 특히 관객 수가 높은 이상치를 확인할 수 있습니다."
 )
+# ============================================================
+# 그래프 6. 개봉일 스크린 수와 총 관객의 관계 - 버블 그래프
+# ============================================================
 
+st.header("📊 그래프 6. 개봉일 스크린 수와 총 관객의 관계 - 버블 그래프")
+
+bubble_df = df[
+    ["movieNm", "genre", "first_scrn", "first_week_audi", "total_audi"]
+].dropna(
+    subset=["movieNm", "genre", "first_scrn", "first_week_audi", "total_audi"]
+).copy()
+
+bubble_df = bubble_df[
+    (bubble_df["first_scrn"] > 0) &
+    (bubble_df["first_week_audi"] > 0) &
+    (bubble_df["total_audi"] >= 0)
+]
+
+fig6 = px.scatter(
+    bubble_df,
+    x="first_scrn",
+    y="total_audi",
+    color="genre",
+    size="first_week_audi",
+    size_max=45,
+    hover_name="movieNm",
+    custom_data=["genre", "first_week_audi"],
+    title="개봉일 스크린 수와 총 관객의 관계 - 첫 주 관객을 버블 크기로 표시",
+    labels={
+        "first_scrn": "개봉일 스크린 수",
+        "total_audi": "총 관객 수",
+        "first_week_audi": "첫 주 관객 수",
+        "genre": "장르"
+    }
+)
+
+fig6.update_traces(
+    marker=dict(
+        opacity=0.7,
+        line=dict(width=1)
+    ),
+    hovertemplate=(
+        "<b>%{hovertext}</b><br>"
+        "장르: %{customdata[0]}<br>"
+        "개봉일 스크린 수: %{x:,.0f}개<br>"
+        "첫 주 관객 수: %{customdata[1]:,.0f}명<br>"
+        "총 관객 수: %{y:,.0f}명"
+        "<extra></extra>"
+    )
+)
+
+fig6.update_layout(
+    xaxis_title="개봉일 스크린 수",
+    yaxis_title="총 관객 수",
+    margin=dict(t=60, b=20, l=20, r=20)
+)
+
+st.plotly_chart(fig6, use_container_width=True)
+
+st.subheader("💡 이 그래프로 알 수 있는 것")
+st.info(
+    "이 그래프로 알 수 있는 것: "
+    "개봉일 스크린 수와 총 관객 수의 관계를 확인하면서, "
+    "첫 주 관객 수가 많은 영화가 큰 버블로 나타나는 것을 함께 비교할 수 있습니다."
+)

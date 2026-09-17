@@ -263,13 +263,80 @@ st.info(
 )
 
 
+
+# ============================================================
+# 9. 네 번째 그래프
+#    개봉일 스크린 수와 총 관객의 관계 - 산점도
+# ============================================================
+
+st.header("📊 그래프 4. 개봉일 스크린 수와 총 관객의 관계")
+
+scatter_df = df[
+    ["movieNm", "genre", "first_scrn", "total_audi"]
+].dropna(
+    subset=["movieNm", "genre", "first_scrn", "total_audi"]
+).copy()
+
+# 의미 있는 양수 데이터만 사용
+scatter_df = scatter_df[
+    (scatter_df["first_scrn"] > 0) &
+    (scatter_df["total_audi"] >= 0)
+]
+
+
+fig4 = px.scatter(
+    scatter_df,
+    x="first_scrn",
+    y="total_audi",
+    color="genre",
+    hover_name="movieNm",
+    hover_data={
+        "genre": True,
+        "first_scrn": ":,.0f",
+        "total_audi": ":,.0f"
+    },
+    title="개봉일 스크린 수와 총 관객의 관계",
+    labels={
+        "first_scrn": "개봉일 스크린 수",
+        "total_audi": "총 관객 수",
+        "genre": "장르"
+    }
+)
+
+fig4.update_traces(
+    hovertemplate=(
+        "<b>%{hovertext}</b><br>"
+        "장르: %{customdata[0]}<br>"
+        "개봉일 스크린 수: %{x:,.0f}개<br>"
+        "총 관객: %{y:,.0f}명"
+        "<extra></extra>"
+    )
+)
+fig4.update_layout(
+    xaxis_title="개봉일 스크린 수",
+    yaxis_title="총 관객 수",
+    margin=dict(t=60, b=20, l=20, r=20)
+)
+
+st.plotly_chart(fig4, use_container_width=True)
+
+
+# ============================================================
+# 10. 그래프 4 설명
+# ============================================================
+
+st.subheader("💡 이 그래프로 알 수 있는 것")
+
+st.info(
+    "이 그래프로 알 수 있는 것: "
+    "영화의 개봉일 스크린 수와 총 관객 수가 어떤 관계를 보이는지 "
+    "장르별로 비교해 볼 수 있습니다."
+)
+
+
 # ============================================================
 # 앞으로 추가할 그래프
 # ============================================================
-
-# 그래프 4
-# st.header("📊 그래프 4. ...")
-
 
 # 그래프 5
 # st.header("📊 그래프 5. ...")

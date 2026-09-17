@@ -171,6 +171,49 @@ st.info(
 )
 
 
+# ============================================================
+# 7. 세 번째 그래프
+#    총 관객 히스토그램
+# ============================================================
+
+st.header("📊 그래프 3. 영화별 총 관객 분포")
+
+# 총 관객 데이터가 있는 영화만 사용
+hist_df = df[
+    ["movieNm", "total_audi"]
+].dropna(subset=["movieNm", "total_audi"]).copy()
+
+hist_df = hist_df[hist_df["total_audi"] >= 0]
+
+
+# 히스토그램
+fig3 = px.histogram(
+    hist_df,
+    x="total_audi",
+    nbins=20,
+    title="영화별 총 관객 분포",
+    labels={
+        "total_audi": "총 관객 수",
+        "count": "영화 편수"
+    }
+)
+
+fig3.update_traces(
+    hovertemplate=(
+        "총 관객 구간: %{x}<br>"
+        "영화 편수: %{y}편"
+        "<extra></extra>"
+    )
+)
+
+fig3.update_layout(
+    xaxis_title="총 관객 수",
+    yaxis_title="영화 편수",
+    margin=dict(t=60, b=20, l=20, r=20)
+)
+
+st.plotly_chart(fig3, use_container_width=True)
+
 
 # ============================================================
 # 8. 그래프 3 설명

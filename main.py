@@ -171,13 +171,58 @@ st.info(
 )
 
 
+
+# ============================================================
+# 8. 그래프 3 설명
+# ============================================================
+
+st.subheader("💡 이 그래프로 알 수 있는 것")
+
+# 가장 관객이 많은 영화 찾기
+most_watched = hist_df.loc[
+    hist_df["total_audi"].idxmax()
+]
+
+most_watched_name = most_watched["movieNm"]
+most_watched_audience = most_watched["total_audi"]
+
+# 가장 많은 영화가 포함된 히스토그램 구간 계산
+min_audience = hist_df["total_audi"].min()
+max_audience = hist_df["total_audi"].max()
+
+bin_width = (max_audience - min_audience) / 20
+
+if bin_width > 0:
+    most_common_bin = (
+        pd.cut(
+            hist_df["total_audi"],
+            bins=20
+        )
+        .value_counts()
+        .idxmax()
+    )
+
+    bin_start = int(most_common_bin.left)
+    bin_end = int(most_common_bin.right)
+
+    distribution_text = (
+        f"대부분의 영화는 총 관객 약 {bin_start:,}명~{bin_end:,}명 구간에 "
+        f"몰려 있습니다."
+    )
+else:
+    distribution_text = "영화들의 총 관객 수가 비슷한 수준에 분포해 있습니다."
+
+
+st.info(
+    f"이 그래프로 알 수 있는 것: {distribution_text} "
+    f"가장 관객이 많은 영화는 '{most_watched_name}'으로, "
+    f"총 관객은 {most_watched_audience:,.0f}명입니다."
+)
+
+
 # ============================================================
 # 앞으로 추가할 그래프
 # ============================================================
-
-# 그래프 3
-# st.header("📊 그래프 3. ...")
-
 
 # 그래프 4
 # st.header("📊 그래프 4. ...")

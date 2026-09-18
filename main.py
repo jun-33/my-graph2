@@ -511,3 +511,64 @@ st.info(
     "제작 국가별로 어떤 장르의 영화가 많이 포함되어 있는지와 "
     "각 국가와 장르의 영화 편수를 한눈에 비교할 수 있습니다."
 )
+# ============================================================
+# 그래프 8. 박스오피스 TOP 10에 머문 일수 분포
+# ============================================================
+
+st.header("📊 그래프 8. 박스오피스 TOP 10에 머문 일수 분포")
+
+top10_df = df[
+    ["movieNm", "days_in_top10"]
+].dropna(
+    subset=["movieNm", "days_in_top10"]
+).copy()
+
+top10_df = top10_df[
+    top10_df["days_in_top10"] >= 0
+]
+
+fig8 = px.histogram(
+    top10_df,
+    x="days_in_top10",
+    nbins=20,
+    title="영화별 박스오피스 TOP 10 유지 일수 분포",
+    labels={
+        "days_in_top10": "TOP 10에 머문 일수",
+        "count": "영화 편수"
+    }
+)
+
+fig8.update_traces(
+    hovertemplate=(
+        "TOP 10 유지 일수: %{x}일<br>"
+        "영화 편수: %{y}편"
+        "<extra></extra>"
+    )
+)
+
+fig8.update_layout(
+    xaxis_title="TOP 10에 머문 일수",
+    yaxis_title="영화 편수",
+    margin=dict(t=60, b=20, l=20, r=20)
+)
+
+st.plotly_chart(fig8, use_container_width=True)
+
+st.subheader("💡 이 그래프로 알 수 있는 것")
+
+most_common_days = (
+    top10_df["days_in_top10"]
+    .value_counts()
+    .idxmax()
+)
+
+max_days_row = top10_df.loc[
+    top10_df["days_in_top10"].idxmax()
+]
+
+st.info(
+    f"이 그래프로 알 수 있는 것: "
+    f"가장 많은 영화가 TOP 10에 머문 기간은 약 {most_common_days}일이며, "
+    f"가장 오래 TOP 10을 유지한 영화는 "
+    f"'{max_days_row['movieNm']}'으로 {max_days_row['days_in_top10']:.0f}일입니다."
+)
